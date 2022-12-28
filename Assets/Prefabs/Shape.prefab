@@ -49,5 +49,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae104921935e33f4483ab16e94b289f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  squareShapeImage: {fileID: 2074612576985813469, guid: ae3deed19fac2f74990c290128c23afb, type: 3}
+  squareShapeImage: {fileID: 1219499768805138887, guid: ae3deed19fac2f74990c290128c23afb, type: 3}
   CurrentShapeData: {fileID: 11400000, guid: 55d40920a3fbacb46a1c6a6d60e39429, type: 2}
