@@ -8,7 +8,10 @@ public class Shape : MonoBehaviour, IPointerClickHandler, IPointerUpHandler, IBe
     public GameObject squareShapeImage;
     public Vector3 shapeSelectedScale;
     public Vector2 offset = new Vector2(0f, 700f);
+
     [HideInInspector] public ShapeData CurrentShapeData;
+
+    public int TotalSquareNumber { get; set; }
 
     private List<GameObject> _currentShape = new List<GameObject>();
     private Vector3 _shapeStartScale;
@@ -28,9 +31,13 @@ public class Shape : MonoBehaviour, IPointerClickHandler, IPointerUpHandler, IBe
         _shapeActive = true;
     }
 
-    void Start()
+    private void OnEnable()
     {
-
+        GameEvents.MoveShapeToStartPosition += MoveShapeToStartPosition;
+    }
+    private void OnDisable()
+    {
+        GameEvents.MoveShapeToStartPosition -= MoveShapeToStartPosition;
     }
     public bool IsOnStartPosition()
     {
@@ -75,9 +82,9 @@ public class Shape : MonoBehaviour, IPointerClickHandler, IPointerUpHandler, IBe
     public void CreateShape(ShapeData shapeData)
     {
         CurrentShapeData = shapeData;
-        var totalSquareNumber = GetNumberOffSquare(shapeData);
+       TotalSquareNumber = GetNumberOffSquare(shapeData);
 
-        while (_currentShape.Count <= totalSquareNumber)
+        while (_currentShape.Count <= TotalSquareNumber)
         {
             _currentShape.Add(Instantiate(squareShapeImage, transform) as GameObject);
         }
@@ -257,5 +264,9 @@ public class Shape : MonoBehaviour, IPointerClickHandler, IPointerUpHandler, IBe
     public void OnPointerDown(PointerEventData eventData)
     {
         throw new System.NotImplementedException();
+    }
+    private void MoveShapeToStartPosition()
+    {
+        _transform.transform.localPosition = _startPosition;
     }
 }
