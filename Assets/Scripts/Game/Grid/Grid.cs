@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class Grid : MonoBehaviour
 {
+    public ShapeStorage shapeStorage;
     public int columns = 0;
     public int rows = 0;
     public float squareGap = 0.1f;
@@ -14,7 +15,17 @@ public class Grid : MonoBehaviour
     public float everySquareOffset = 0.0f;
 
     private Vector2 offset = new Vector2(0.0f, 0.0f);
-    private List<GameObject> gridSquares = new List<GameObject>();
+    private List<GameObject> _gridSquares = new List<GameObject>();
+
+    private void OnEnable()
+    {
+        GameEvents.CheckIfShapeCanBePlaced += CheckIfShapeCanBePlaced;
+    }
+
+    private void OnDisable()
+    {
+        GameEvents.CheckIfShapeCanBePlaced -= CheckIfShapeCanBePlaced;
+    }
 
     void Start()
     {
@@ -38,10 +49,10 @@ public class Grid : MonoBehaviour
         {
             for (var column = 0; column < columns; ++column)
             {
-                gridSquares.Add(Instantiate(gridSquare) as GameObject);
-                gridSquares[gridSquares.Count - 1].transform.SetParent(this.transform);
-                gridSquares[gridSquares.Count - 1].transform.localScale = new Vector3(squareScale, squareScale, squareScale);
-                gridSquares[gridSquares.Count - 1].GetComponent<GridSquare>().SetImage(squareIndex % 2 == 0);
+                _gridSquares.Add(Instantiate(gridSquare) as GameObject);
+                _gridSquares[_gridSquares.Count - 1].transform.SetParent(this.transform);
+                _gridSquares[_gridSquares.Count - 1].transform.localScale = new Vector3(squareScale, squareScale, squareScale);
+                _gridSquares[_gridSquares.Count - 1].GetComponent<GridSquare>().SetImage(squareIndex % 2 == 0);
                 squareIndex++;
             }
         }
@@ -54,12 +65,12 @@ public class Grid : MonoBehaviour
         Vector2 squareGapNumber = new Vector2(0.0f, 0.0f);
         bool rowMoved = false;
 
-        var squareRect = gridSquares[0].GetComponent<RectTransform>();
+        var squareRect = _gridSquares[0].GetComponent<RectTransform>();
 
         offset.x = squareRect.rect.width * squareRect.transform.localScale.x + everySquareOffset;
         offset.y = squareRect.rect.height * squareRect.transform.localScale.y + everySquareOffset;
 
-        foreach (GameObject square in gridSquares)
+        foreach (GameObject square in _gridSquares)
         {
             if (columnNumber + 1 > columns)
             {
@@ -92,6 +103,21 @@ public class Grid : MonoBehaviour
             columnNumber++;
         }
 
+    }
+
+    private void CheckIfShapeCanBePlaced()
+    {
+        foreach ( var square in _gridSquares)
+        {
+            var gridSquare = square.GetComponent<GridSquare>();
+
+            if(gridSquare.CanWeUseThisSquare() == true)
+            {
+                gridSquare.ActivateSquare();
+            }
+        }
+
+        shapeStorage.GetCurrentSelectedShape().DeactivateShape();
     }
 
 

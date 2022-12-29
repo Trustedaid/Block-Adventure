@@ -18,7 +18,7 @@ public class ShapeDataDrawer : Editor
 
         DrawColumnInputFields();
         EditorGUILayout.Space();
-        if(ShapeDataInstance.board != null && ShapeDataInstance.columns > 0 && ShapeDataInstance.rows > 0)
+        if (ShapeDataInstance.board != null && ShapeDataInstance.columns > 0 && ShapeDataInstance.rows > 0)
         {
             DrawBoardTable();
         }
@@ -33,7 +33,7 @@ public class ShapeDataDrawer : Editor
 
     private void ClearBoardButton()
     {
-        if(GUILayout.Button("Clear Board"))
+        if (GUILayout.Button("Clear Board"))
         {
             ShapeDataInstance.Clear();
         }
