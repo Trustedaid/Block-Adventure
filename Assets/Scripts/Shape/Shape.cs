@@ -16,7 +16,7 @@ public class Shape : MonoBehaviour, IPointerClickHandler, IPointerUpHandler, IBe
     private List<GameObject> _currentShape = new List<GameObject>();
     private Vector3 _shapeStartScale;
     private RectTransform _transform;
-    private bool _shapeDraggable = true;
+    private bool _shapeDraggable = false;
     private Canvas _canvas;
     private Vector3 _startPosition;
     private bool _shapeActive = true;
@@ -276,7 +276,7 @@ public class Shape : MonoBehaviour, IPointerClickHandler, IPointerUpHandler, IBe
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        throw new System.NotImplementedException();
+       
     }
     private void MoveShapeToStartPosition()
     {
