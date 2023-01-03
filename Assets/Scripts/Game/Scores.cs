@@ -28,7 +28,7 @@ public class Scores : MonoBehaviour
     {
         bestScores_ = BinaryDataStream.Read<BestScoreData>(bestScoreKey_);
         yield return new WaitForEndOfFrame();
-        Debug.Log("Read Best Scores = " + bestScores_.score);
+        GameEvents.UpdateBestScoreBar(currentScores_, bestScores_.score);
     }
     private void Start()
     {
@@ -49,7 +49,7 @@ public class Scores : MonoBehaviour
         GameEvents.GameOver -= SaveBestScores;
     }
 
-    private void SaveBestScores(bool newBestScores)
+    public void SaveBestScores(bool newBestScores)
     {
         BinaryDataStream.Save<BestScoreData>(bestScores_,bestScoreKey_);
     }
@@ -61,7 +61,10 @@ public class Scores : MonoBehaviour
         {
             newBestScore_ = true;
             bestScores_.score = currentScores_;
+            SaveBestScores(true);
         }
+
+        GameEvents.UpdateBestScoreBar(currentScores_, bestScores_.score);
 
         UpdateScoreText();
     }
