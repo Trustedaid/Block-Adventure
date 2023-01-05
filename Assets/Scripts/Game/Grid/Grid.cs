@@ -8,6 +8,7 @@ public class Grid : MonoBehaviour
     public ShapeStorage shapeStorage;
     public int columns = 0;
     public int rows = 0;
+    public int streakBonusPoint = 50;
     public float squareGap = 0.1f;
     public GameObject gridSquare;
     public Vector2 startPosition = new Vector2(0.0f, 0.0f);
@@ -20,6 +21,9 @@ public class Grid : MonoBehaviour
 
     private LineIndicator _lineIndicator;
     private Config.SquareColor currentActiveSquareColor_ = Config.SquareColor.NotSet;
+    private List<Config.SquareColor> colorsInTheGrid_ = new List<Config.SquareColor>();
+
+
     private void OnEnable()
     {
         GameEvents.CheckIfShapeCanBePlaced += CheckIfShapeCanBePlaced;
@@ -41,6 +45,26 @@ public class Grid : MonoBehaviour
     private void OnUpdateSquareColor(Config.SquareColor color)
     {
         currentActiveSquareColor_ = color;
+    }
+
+    private List<Config.SquareColor> GetAllSquareColorsInTheGrid()
+    {
+        var colors = new List<Config.SquareColor>();
+        foreach (var square in _gridSquares)
+        {
+
+            var gridSquare = square.GetComponent<GridSquare>();
+            if (gridSquare.SquareOccupied)
+            {
+                var color = gridSquare.GetCurrenColor();
+                if (colors.Contains(color) == false)
+                {
+                    colors.Add(color);
+                }
+            }
+        }
+        return colors;
+
     }
 
     private void CreateGrid()
@@ -204,7 +228,8 @@ public class Grid : MonoBehaviour
             lines.Add(data.ToArray());
         }
 
-
+        // this function need to be called before CheckIfSquaresAreCompleted
+        colorsInTheGrid_ = GetAllSquareColorsInTheGrid();
 
         var completedLines = CheckIfSquaresAreCompleted(lines);
 
@@ -215,9 +240,39 @@ public class Grid : MonoBehaviour
         }
 
         var totalScores = 10 * completedLines;
-        GameEvents.AddScores(totalScores);
+        var bonusScores = ShouldPlayColorBonusAnimation();
+
+        GameEvents.AddScores(totalScores + bonusScores);
         CheckIfPlayerLost();
 
+    }
+
+    private int ShouldPlayColorBonusAnimation()
+    {
+        int bonusPointValues = streakBonusPoint;
+        var colorsInTheGridAfterLineRemoved = GetAllSquareColorsInTheGrid();
+        Config.SquareColor colorToPlayBonusFor = Config.SquareColor.NotSet;
+
+        foreach (var squareColor in colorsInTheGrid_)
+        {
+            if (colorsInTheGridAfterLineRemoved.Contains(squareColor) == false)
+            {
+                colorToPlayBonusFor = squareColor;
+            }
+        }
+        if (colorToPlayBonusFor == Config.SquareColor.NotSet)
+        {
+            Debug.Log("Cannot Find for bonus");
+            return 0;
+        }
+        // should never play bonus for the current color
+        if (colorToPlayBonusFor == currentActiveSquareColor_)
+        {
+            return 0;
+        }
+
+        GameEvents.ShowBonusScreen(colorToPlayBonusFor);
+        return bonusPointValues;
     }
     private int CheckIfSquaresAreCompleted(List<int[]> data)
     {
